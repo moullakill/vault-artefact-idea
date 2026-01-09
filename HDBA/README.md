@@ -71,7 +71,7 @@ Cette architecture vise à :
 ## Licence
 
 Ce contenu est publié sous la licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).  
-Auteur : [Ton Nom].  
+Auteur : Salengros Liam.  
 Vous êtes libre de copier, modifier et partager ce contenu, à condition de m’attribuer correctement.
 
 ---
