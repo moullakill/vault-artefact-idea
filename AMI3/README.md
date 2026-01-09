@@ -1,3 +1,4 @@
+![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
 # AMI3 : Augmented Mathematical Image 
 
 **AMI3** est une norme de description d'image hybride conçue pour optimiser drastiquement le stockage et le transfert de données graphiques. Contrairement aux formats matriciels (pixels) ou vectoriels classiques (XML/SVG), l'AMI3 repose sur le paradigme **"Offload Storage to Computing"** : réduire le poids du fichier au strict minimum en déléguant la reconstruction visuelle à la puissance de calcul locale via des primitives mathématiques et un jeu d'instructions binaire.
