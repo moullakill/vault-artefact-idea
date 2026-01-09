@@ -396,3 +396,7 @@ END
 Produit un cercle central traversé par deux axes lumineux.
 
 --- 
+
+*Conçu et imaginé par Salengros Liam — 2026*
+
+*Rédaction technique assistée par intelligence artificielle*
