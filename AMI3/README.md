@@ -34,7 +34,7 @@ L'AMI3 est actuellement au stade de **Concept**.
 * [x] Grammaire EBNF définie.
 * [x] Table des Opcodes préliminaire.
 * [ ] Développement du moteur de rendu (Renderer) 
-* [X] Compilateur AMI3-T to AMI3-B.
+* [X] Compilateur AMI3-T to AMI3-B. *Le compilateur fourni est éxperimental et il peut être instable ou incompatible avec les dernères mises à jour de la norme AMI3*
 
 ---
 
