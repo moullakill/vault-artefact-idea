@@ -1,93 +1,153 @@
 # Rotational Mesh Cipher (RMC) – Concept Théorique
 
-**Auteur :** [Ton Nom / Pseudo]  
-**Date :** 2026-01-09  
+**Auteur :** [Votre Nom]  
+**Date :** Janvier 2026
 
 ---
 
-## Introduction
+## 1. Introduction
 
-Le **Rotational Mesh Cipher (RMC)** est une proposition de cryptosystème à clé publique basée sur l’**algèbre non-commutative**. L’idée centrale est d’utiliser un groupe semi-direct \( \mathbb{Z}_P^3 \rtimes \text{GL}(3, \mathbb{Z}_P) \) ou \( \mathbb{Z}_P^3 \rtimes \text{SO}(3, \mathbb{Z}_P) \) pour construire une fonction à sens unique analogue au Diffie-Hellman, mais dans un espace de rotation/translation sur un corps fini.  
+Le **Rotational Mesh Cipher (RMC)** est un concept de cryptosystème à clé publique basé sur la non-commutativité des groupes semi-directs.  
+L'idée centrale est de combiner des **rotations et translations dans un espace fini** pour créer une fonction à sens unique, exploitable pour l'échange de clés et le chiffrement hybride.
 
-Cette approche exploite la **non-commutativité** pour augmenter la complexité du problème du logarithme discret, dans l’espoir d’offrir un mécanisme d’échange de clés résistant à certaines attaques abéliennes classiques.
+> ⚠️ Ce projet est **à l’état théorique**. Il ne doit pas être utilisé pour des applications réelles sans audits de sécurité approfondis et validation cryptographique rigoureuse.
 
 ---
 
-## Concept Théorique
+## 2. Structure Algébrique
 
-### Structure du Groupe
+Le RMC utilise un **groupe non-abélien** défini comme un produit semi-direct :
 
-- **Groupe de travail** : \( G \cong \mathbb{Z}_P^3 \rtimes \text{SO}(3, \mathbb{Z}_P) \)
-- **Éléments** : \( g = (\vec{t}, R) \)  
-  - \( \vec{t} \in \mathbb{Z}_P^3 \) – vecteur de translation  
-  - \( R \in \text{SO}(3, \mathbb{Z}_P) \) – matrice de rotation
-- **Opération de groupe** :  
-  \[
-  (\vec{t}_1, R_1) \odot (\vec{t}_2, R_2) = (\vec{t}_1 + R_1 \cdot \vec{t}_2, R_1 \cdot R_2)
-  \]
+$$
+G \cong \mathbb{Z}_P^3 \rtimes \text{SO}(3, \mathbb{Z}_P)
+$$
 
-La non-commutativité (\( g_1 \odot g_2 \neq g_2 \odot g_1 \)) est le principe central pour la difficulté du logarithme discret dans ce groupe.
+où :
 
-### Fonction à sens unique
+- $P$ est un grand nombre premier cryptographiquement sûr,  
+- $\vec{t} \in \mathbb{Z}_P^3$ représente un **vecteur de translation**,  
+- $R \in \text{SO}(3, \mathbb{Z}_P)$ représente une **matrice de rotation**.
 
-Pour un générateur \( G = (\vec{t}, R) \) et un scalaire secret \( n \), l’**exponentiation** est définie par :
+La loi de composition est donnée par :
 
-\[
+$$
+(\vec{t}_1, R_1) \odot (\vec{t}_2, R_2) = (\vec{t}_1 + R_1 \cdot \vec{t}_2, R_1 \cdot R_2)
+$$
+
+Cette loi est **non-commutative** :
+
+$$
+(\vec{t}_1, R_1) \odot (\vec{t}_2, R_2) \neq (\vec{t}_2, R_2) \odot (\vec{t}_1, R_1)
+$$
+
+---
+
+## 3. Exponentiation et Fonction à Sens Unique
+
+L'exponentiation dans le groupe $G$ est définie comme :
+
+$$
 G^n = (\vec{t}, R)^n = \left( \sum_{i=0}^{n-1} R^i \cdot \vec{t}, R^n \right)
-\]
+$$
 
-La somme vectorielle est une **série géométrique matricielle** non-commutative.
+où la série de translations est équivalente à une **somme géométrique matricielle** :
 
----
+$$
+\sum_{i=0}^{n-1} R^i = (I - R^n)(I - R)^{-1}, \quad \text{si } I-R \text{ est inversible}
+$$
 
-## Avantages Théoriques
-
-- **Non-commutativité** : complique certaines attaques classiques sur DLP et CDHP.  
-- **Combinaison translation + rotation** : augmente la dimension de l’espace clé et rend les collisions plus rares.  
-- **Flexibilité de construction** : possible de construire des matrices \( R \) avec de grands ordres et des propriétés contrôlées pour la sécurité.
+Cette construction crée une fonction difficile à inverser, servant de base au **Problème du Logarithme Discret dans le groupe non-commutatif (DLP-RMC)**.
 
 ---
 
-## Limites et Inconvénients
+## 4. Échange de Clé Théorique
 
-- **Complexité de génération de clés** : un tirage aléatoire simple rejette souvent toutes les matrices (valeurs propres indésirables, ordres trop petits). La clé doit être **construite mathématiquement**.  
-- **Calcul coûteux** : exponentiation non-commutative et contrôle des propriétés sur de grands corps finis nécessitent des entiers illimités (Python `int` ou bibliothèques GMP).  
-- **Sécurité non formellement prouvée** : pas encore de réduction de sécurité complète sur des problèmes connus.  
-- **Usage purement théorique** : ce projet ne doit pas être utilisé en production ou pour protéger des données sensibles.
+Le RMC peut être utilisé pour un échange de clé similaire à Diffie-Hellman :
 
----
+1. Alice choisit une clé privée $s_A$, Bob une clé privée $s_B$.  
+2. Les clés publiques sont calculées :
 
-## Simulations et PoC
+$$
+P_A = G^{s_A}, \quad P_B = G^{s_B}
+$$
 
-Des PoC Python ont été développés pour :
+3. Le secret partagé est :
 
-- simuler la génération aléatoire de matrices \( R \) et vecteurs \( t \) ;  
-- analyser la distribution des déterminants \(\det(I-R)\) et des ordres des matrices ;  
-- constater le **taux de rejet élevé**, ce qui souligne la nécessité de construction contrôlée des clés ;  
-- produire des graphiques et CSV pour l’étude théorique.
+$$
+K = P_A^{s_B} = P_B^{s_A} = G^{s_A s_B}
+$$
 
-> ⚠️ Tous les résultats sont expérimentaux et servent à **comprendre la structure et les limitations théoriques** du RMC.
-
----
-
-## Perspectives
-
-- Étudier des méthodes constructives pour générer des matrices \( R \) avec un grand ordre et sans valeurs propres 1.  
-- Évaluer la sécurité théorique et les possibles réductions sur des problèmes connus (DLP non-commutatif, log-problème orbital).  
-- Explorer l’extension à des dimensions plus grandes ou des groupes non-abéliens différents.
+La non-commutativité du groupe introduit une **complexité supplémentaire**, qui pourrait renforcer la sécurité contre certaines attaques sur les groupes abéliens classiques.
 
 ---
 
-## Conclusion
+## 5. Propriétés Théoriques
 
-Le **RMC** est une **idée théorique** intéressante dans le domaine des cryptosystèmes non-commutatifs.  
-Il met en évidence la complexité d’exponentiation dans un espace rotation/translation et la nécessité d’une **construction contrôlée des clés**.  
-Cependant, **aucune implémentation de production sécurisée n’existe**, et ce projet doit être considéré comme un terrain d’étude et d’expérimentation.
+**Avantages théoriques :**
+
+- Exploite la **non-commutativité**, rendant certaines attaques classiques moins efficaces.  
+- Utilise un **espace vectoriel + rotation**, permettant de concevoir des fonctions à sens unique peu classiques.  
+- Compatible avec une **architecture hybride**, utilisant le RMC pour la clé et AES pour le chiffrement rapide.
+
+**Inconvénients / Limitations :**
+
+- Le DLP-RMC est **non standard** et n’a pas encore été formellement réduit à des problèmes connus.  
+- La génération aléatoire de matrices $R$ sûres est difficile, nécessitant **une construction mathématique contrôlée**.  
+- Calculs matriciels modulo $P$ pour de grands nombres premiers peuvent être **très lourds**.  
+- Pas de validation pratique ni de preuves de résistance aux attaques classiques (quantum ou algébriques).
 
 ---
 
-## Licence
+## 6. Considérations de sécurité
 
-Ce projet est fourni **à titre purement académique et expérimental**.  
-Aucune garantie n’est donnée sur la sécurité, et il ne doit **pas être utilisé pour des données sensibles**.
+- Les matrices $R$ doivent être choisies pour **éviter les valeurs propres 1** et avoir un ordre suffisamment grand.  
+- Le vecteur $\vec{t}$ doit être choisi **hors des sous-espaces propres de $R$**.  
+- Les paramètres doivent être audités pour garantir que le **DLP-RMC reste difficile à résoudre**.  
+- Ce concept est purement **théorique** et ne doit pas être utilisé en production sans recherche et audit approfondis.
+
+---
+
+## 7. PoC et Simulation
+
+Des scripts Python de preuve de concept (PoC) ont été développés pour :
+
+- Vérifier la distribution des **det(I-R)** et des ordres des matrices $R$.  
+- Tester le **taux de rejet** des clés aléatoires et valider que la construction aléatoire est insuffisante pour produire des clés sûres.  
+- Générer des **graphes d’analyse** et CSV pour études statistiques.
+
+> ⚠️ Les PoC actuels servent uniquement à **exploration et visualisation théorique**, et ne garantissent pas de sécurité pratique.
+
+---
+
+## 8. Conclusion
+
+Le RMC est un **concept théorique prometteur** qui combine :
+
+- non-commutativité,  
+- structure translation + rotation,  
+- exponentiation matricielle modulaire.
+
+Il pourrait fournir **une alternative intéressante** aux DLP classiques et aux groupes elliptiques, mais nécessite :
+
+- une **construction mathématique contrôlée** des clés,  
+- des **preuves formelles de sécurité**,  
+- des **analyses approfondies des sous-groupes et des collisions**.
+
+Le RMC doit être considéré comme **une idée de recherche** et non un protocole finalisé.
+
+---
+
+## 9. Références
+
+1. Diffie, W. & Hellman, M. (1976). *New Directions in Cryptography.*  
+2. Menezes, A., van Oorschot, P., & Vanstone, S. (1996). *Handbook of Applied Cryptography.*  
+3. Recherche interne sur **groupes non-commutatifs** et problèmes de logarithme discret.  
+4. Concepts de **semi-direct product et matrices compagnon**.
+
+---
+
+## 10. Licence
+
+Ce projet est fourni **à titre expérimental et éducatif**.  
+Aucune garantie n’est donnée sur la sécurité ou la validité cryptographique.
 
