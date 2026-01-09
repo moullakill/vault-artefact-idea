@@ -1,3 +1,4 @@
+![Licence](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey)
 # H.D.B.A. (Hierarchical Divisible Block Architecture)
 
 > Concept exploratoire pour une architecture de modèles de langage modulaires, hiérarchiques et adaptatifs.
@@ -67,5 +68,18 @@ Cette architecture vise à :
 
 ---
 
+## Licence
+
+Ce contenu est publié sous la licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).  
+Auteur : [Ton Nom].  
+Vous êtes libre de copier, modifier et partager ce contenu, à condition de m’attribuer correctement.
+
+---
+
 *Ce README a pour objectif de présenter H.D.B.A comme concept et inspiration pour la recherche et l’innovation en IA, sans prétendre à une implémentation immédiate.*
 
+
+*Conçu et imaginé par Salengros Liam — 2026*
+
+
+*Rédaction technique assistée par intelligence artificielle*
