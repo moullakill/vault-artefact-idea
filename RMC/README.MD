@@ -1,8 +1,5 @@
 # Rotational Mesh Cipher (RMC) – Concept Théorique
 
-**Auteur :** [Votre Nom]  
-**Date :** Janvier 2026
-
 ---
 
 ## 1. Introduction
@@ -107,21 +104,9 @@ La non-commutativité du groupe introduit une **complexité supplémentaire**, q
 
 ---
 
-## 7. PoC et Simulation
+## 7. Conclusion
 
-Des scripts Python de preuve de concept (PoC) ont été développés pour :
-
-- Vérifier la distribution des **det(I-R)** et des ordres des matrices $R$.  
-- Tester le **taux de rejet** des clés aléatoires et valider que la construction aléatoire est insuffisante pour produire des clés sûres.  
-- Générer des **graphes d’analyse** et CSV pour études statistiques.
-
-> ⚠️ Les PoC actuels servent uniquement à **exploration et visualisation théorique**, et ne garantissent pas de sécurité pratique.
-
----
-
-## 8. Conclusion
-
-Le RMC est un **concept théorique prometteur** qui combine :
+Le RMC est un **concept théorique** qui combine :
 
 - non-commutativité,  
 - structure translation + rotation,  
@@ -137,7 +122,7 @@ Le RMC doit être considéré comme **une idée de recherche** et non un protoco
 
 ---
 
-## 9. Références
+## 8. Références
 
 1. Diffie, W. & Hellman, M. (1976). *New Directions in Cryptography.*  
 2. Menezes, A., van Oorschot, P., & Vanstone, S. (1996). *Handbook of Applied Cryptography.*  
@@ -146,8 +131,12 @@ Le RMC doit être considéré comme **une idée de recherche** et non un protoco
 
 ---
 
-## 10. Licence
+## 9. Licence
 
 Ce projet est fourni **à titre expérimental et éducatif**.  
 Aucune garantie n’est donnée sur la sécurité ou la validité cryptographique.
 
+
+*Conçu et imaginé par Salengros Liam — 2026*
+
+*Rédaction technique assistée par intelligence artificielle*
