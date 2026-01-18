@@ -33,9 +33,9 @@ Cette séparation claire entre **géométrie, style, répétition et effets** pe
 L'AMI3 est actuellement au stade de **Concept**.
 
 * [x] Grammaire EBNF définie.
-* [x] Table des Opcodes préliminaire.
+* [x] Table des Opcodes.
 * [ ] Développement du moteur de rendu (Renderer) 
-* [X] Compilateur AMI3-T to AMI3-B. *Le compilateur fourni est éxperimental et il peut être instable ou incompatible avec les dernères mises à jour de la norme AMI3*
+* [ ] Compilateur AMI3-T to AMI3-B. 
 
 ---
 
