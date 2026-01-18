@@ -89,3 +89,7 @@ Syllos est une proposition architecturale. L'efficacité du système dépend des
 
 ---
 
+**Conçu et imaginé par Salengros Liam — 2026**
+
+
+*Rédaction technique assistée par intelligence artificielle*
