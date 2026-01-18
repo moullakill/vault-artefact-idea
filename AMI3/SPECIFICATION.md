@@ -1,6 +1,6 @@
 # **AMI3 — Spécification Technique**
 
-**Norme AMI3 – Version 1.1**
+**Norme AMI3 – Version 1.0**
 Formats **AMI3-T (texte)** & **AMI3-B (binaire)**
 
 ---
@@ -108,7 +108,7 @@ RSL:width,height
 
 ```ami3
 HEAD:AMI3
-VER:1.1
+VER:1.0
 RSL:1920,1080
 ```
 
