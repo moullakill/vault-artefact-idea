@@ -1,95 +1,91 @@
-# Syllos : Framework d'Architecture d'IA en "Chandelier"
+![Licence](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey) ![Licence](https://img.shields.io/badge/Categorie-WHITEPAPER-purple)
+# Syllos : Architecture Conceptuelle de Vérification par Cascade 
 
-**Syllos** est un concept d'architecture logicielle conçu pour transformer l'inférence des grands modèles de langage (LLM) d'un moteur de probabilité en un moteur de vérification formelle.
+**Syllos** est un cadre d'architecture logicielle conçu pour transformer l'intelligence artificielle générative d'un moteur de probabilité en un système de vérification formelle. Contrairement aux modèles de chat standards, Syllos utilise une structure descendante appelée **Topologie en Chandelier** pour garantir l'exactitude des faits et la sécurité des réponses.
 
-Basé sur une topologie descendante dite en "Chandelier", Syllos privilégie la **vérité documentaire** et la **stabilité logique** sur la rapidité, suivant une philosophie *High Cost, High Quality*.
-
-> [!IMPORTANT]
-> **Syllos est une idée conceptuelle.** Ce n'est ni un logiciel fini, ni un produit commercial. Ce dépôt propose une structure de pensée et un workflow que n'importe qui peut implémenter, modifier et adapter sous licence Apache 2.0.
+> **Avertissement :** Syllos est un **concept théorique** et une méthode d'organisation de l'information. Ce dépôt ne contient pas de code exécutable, mais définit les spécifications pour une mise en application par des tiers.
 
 ---
 
-## 1. Vision Philosophique
+## 1. Philosophie : "High Cost, High Quality"
 
-L'architecture Syllos repose sur trois piliers :
+L'architecture Syllos part du principe que pour les questions critiques (médicales, juridiques, stratégiques), le coût de calcul et la latence sont secondaires par rapport à la **vérité**.
 
-1. **La Fragmentation des Biais :** Aucun modèle ne traite la question seul.
-2. **Le Score de Vérité () :** Une réponse n'est valide que si elle est physiquement présente dans les sources, sans aucune inférence autorisée.
-3. **L'Antagonisme Argumenté :** En cas de divergence de sources fiables, le système refuse de trancher et produit une réponse "Yes and No" documentée.
+* **Zéro Inférence Sauvage** : Le système ne doit rien "inventer" ; chaque segment de réponse doit être physiquement traçable vers une source.
+* **Divergence Argumentée** : Si les sources sont contradictoires, Syllos renvoie une analyse comparative ("Yes and No") plutôt qu'une réponse arbitraire.
 
 ---
 
-## 2. Architecture du Workflow (Le Chandelier)
+## 2. La Topologie en "Chandelier" (Workflow)
 
-L'architecture se déploie en couches successives pilotées par un **Arbitre Central**.
+L'architecture décompose le processus de réflexion en couches successives afin de réduire l'entropie et d'éliminer les hallucinations.
 
 ### Étage 0 : Phase d'Exploration (Largeur X)
 
-Le système déploie  agents spécialisés en parallèle.
+Le système déploie  agents spécialisés en parallèle. Chaque agent est confiné dans une "bulle de recherche" thématique unique pour éviter le biais de confirmation :
 
-* **Segmentation des sources :** Chaque agent est confiné à une "bulle" spécifique (ex: sources académiques uniquement, sources gouvernementales, etc.).
-* **Production :** Chaque agent génère une réponse brute accompagnée de son raisonnement (*Chain of Thought*) et de l'indexation précise de ses sources.
+* **Segmentation** : Un agent interroge les bases de données médicales, un autre les sources gouvernementales, un troisième la presse scientifique, etc.
+* **Production** : Chaque agent génère une réponse brute, son raisonnement (*Chain of Thought*) et l'indexation précise de ses sources.
 
 ### Étages Intermédiaires : Raffinement (Densité Y)
 
-Chaque modèle de l'étage  reçoit les entrées de  modèles de l'étage supérieur.
+Chaque modèle de l'étage  reçoit les entrées de  modèles de l'étage supérieur (typiquement ).
 
-* **Contrôle croisé :** Les modèles comparent les faits. En cas de contradiction, ils émettent un signal d'alerte vers l'Arbitre plutôt que de moyenner les statistiques.
-* **Hétérogénéité :** Il est recommandé d'utiliser des modèles de familles et de tailles différentes à chaque étage pour éviter les biais de formation communs.
-
----
-
-## 3. L'Arbitre Central (Cœur Logique)
-
-L'Arbitre est le superviseur du flux. Il ne génère pas de contenu, il calcule la validité du processus via trois métriques :
-
-1. **Score de Ressemblance () :** Mesure la cohérence sémantique entre les modèles. Une chute de  indique une instabilité du sujet ou une tentative de manipulation.
-2. **Score de Vérité () :** Vérifie que chaque affirmation est strictement supportée par les sources citées (Inférence Zéro).
-3. **Validation de Descente :** Autorise le passage à l'étage inférieur uniquement si les seuils de sécurité sont atteints.
+* **Contrôle croisé** : Le modèle compare les faits reçus. S'il y a une contradiction, il ne tente pas de moyenne statistique mais signale le conflit à l'Arbitre Central.
+* **Hétérogénéité** : Pour maximiser la détection d'erreurs, chaque étage utilise des modèles de familles et de tailles différentes.
 
 ---
 
-## 4. Protocole de Sécurité et Anti-Jailbreak
+## 3. L'Arbitre Central : Le Cœur Logique
 
-Syllos est conçu pour être "Stateless" (sans état) par défaut, garantissant une isolation totale entre les requêtes.
+L'Arbitre ne génère pas de texte ; il agit comme un superviseur de flux et un juge de validité. Il calcule trois scores critiques :
 
-* **Détection de Malware (Jailbreak) :** Si l'Arbitre détecte un comportement suspect ou une tentative de contournement des instructions (via le ), la requête est renvoyée au Dispatcher avec un flag de sécurité.
-* **Redondance de Sécurité :** Une requête suspecte est traitée par un second Chandelier indépendant. Si l'anomalie persiste, la requête est définitivement abandonnée ("Poubelle").
-* **Système de Réputation :** Le système permet de moduler les ressources allouées en fonction de la fiabilité de l'origine, sans pour autant bloquer les utilisateurs légitimes.
+1. **Score de Ressemblance (Sr)** : Mesure la cohérence sémantique entre les modèles. Si  est trop bas, le système détecte une instabilité et peut relancer une recherche.
+2. **Score de Vérité (Sv)** : Vérifie que chaque affirmation est strictement présente dans les sources citées.
+3. **Validation de Descente** : L'Arbitre autorise le passage à l'étage inférieur uniquement si les seuils de sécurité sont atteints.
 
 ---
 
-## 5. Spécifications Techniques Suggérées
+## 4. Sécurité Active et Anti-Jailbreak
 
-| Composant | Rôle | Technologie recommandée (exemples) |
+Syllos est conçu pour résister aux manipulations de type "Prompt Injection" :
+
+* **Le Flag Malware** : Si l'Arbitre détecte une tentative de détournement des instructions, il marque la requête d'un flag et la renvoie à un second Chandelier indépendant pour confirmation.
+* **Circuit de Purge** : Si l'anomalie est confirmée sur deux clusters distincts, la requête est supprimée ("Drop").
+* **Score de Réputation (CSC)** : Les IP présentant des patterns d'attaque répétés voient leur score de confiance chuter dans le *Cluster Server Cache*, entraînant un blacklistage ou une demande de "Preuve de Travail".
+* **Isolation Matérielle** : En cas de dérive logicielle critique, l'architecture prévoit une coupure physique de l'alimentation des serveurs concernés via un Smart PDU pour purger la RAM.
+
+---
+
+## 5. Spécifications du Système
+
+| Couche | Rôle principal | Caractéristique |
 | --- | --- | --- |
-| **Dispatcher** | Load Balancer & Sécurité | Nginx / Custom Go Dispatcher |
-| **Orchestrateur** | Gestion du Chandelier | Python (LangGraph / Temporal.io) |
-| **Agents** | Inférence de données | Modèles experts (Mistral, Llama, Claude) |
-| **Arbitre** | Calcul de cohérence | Modèle SOTA (GPT-4o / Claude 3.5) |
-| **Mémoire** | Stockage temporaire | Redis (In-memory uniquement) |
+| **Logiciel** | Orchestration Syllos | Architecture **Stateless** (uniquement en RAM). |
+| **Mémoire (PSC)** | Personal Server Cache | Stockage temporaire ultra-rapide pour les calculs. |
+| **Index (CSC)** | Cluster Server Cache | Base de données de confiance (Whitelist/Blacklist) mise à jour en temps réel. |
+| **Interface** | Sortie Utilisateur | Rapport d'expertise sourcé ou Analyse de Divergence. |
 
 ---
 
-## 6. Mise en Application
+## 6. Licence
 
-Cette architecture est idéale pour les domaines où l'erreur n'est pas une option :
+Le concept **Syllos** est publié sous la licence **Creative Commons Attribution 4.0 International (CC BY 4.0)**.
 
-* Aide au diagnostic médical.
-* Analyse de conformité juridique et réglementaire.
-* Intelligence stratégique et cybersécurité.
+**Vous êtes autorisé à :**
 
-### Pourquoi Apache 2.0 ?
+* **Partager** : copier et distribuer le concept.
+* **Adapter** : remixer, transformer et créer à partir de ce concept pour toute utilisation, y compris commerciale.
 
-Nous pensons que la sécurité de l'IA doit être transparente. En utilisant la licence Apache 2.0, Syllos permet :
+**Selon les conditions suivantes :**
 
-* **La modification commerciale :** Les entreprises peuvent bâtir leurs propres versions de Syllos.
-* **La protection des brevets :** Garantit une collaboration saine entre contributeurs.
-* **La redistribution :** N'importe qui peut partager ses améliorations du modèle d'Arbitrage.
+* **Attribution** : Vous devez créditer le concept original (Syllos) et indiquer si des modifications ont été effectuées.
 
 ---
 
-## Licence
+## 7. Clause de Non-Responsabilité
 
-Ce concept est partagé sous licence **Apache 2.0**. Voir le fichier `LICENSE` pour plus de détails.
+Syllos est une proposition architecturale. L'efficacité du système dépend des modèles d'IA et des sources de données choisis lors de l'implémentation. Les auteurs déclinent toute responsabilité quant aux résultats produits par une application basée sur ce README.
+
+---
 
