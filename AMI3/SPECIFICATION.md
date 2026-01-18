@@ -1,22 +1,24 @@
 # **AMI3 — Spécification Technique**
 
-**Version de la norme : 1.0**
-Norme **AMI3-T (texte)** & **AMI3-B (binaire)**
+**Norme AMI3 – Version 1.1**
+Formats **AMI3-T (texte)** & **AMI3-B (binaire)**
 
 ---
 
 ## 1. Vue d’ensemble
 
-AMI3 est un format graphique **vectoriel**, **déterministe** et **compilable**, conçu pour décrire des scènes complexes à l’aide d’instructions géométriques minimales.
+AMI3 est un format graphique **vectoriel**, **déterministe** et **compilable**, conçu pour décrire des scènes graphiques complexes à l’aide d’instructions géométriques minimales.
 
-Le format repose sur deux représentations :
+AMI3 privilégie la philosophie "offload storage to computing".
 
-| Format     | Description                      |
-| ---------- | -------------------------------- |
-| **AMI3-T** | Langage texte lisible (source)   |
-| **AMI3-B** | Flux binaire compact (exécution) |
+Deux représentations existent :
 
-AMI3-T est compilable en AMI3-B.
+| Format     | Description                       |
+| ---------- | --------------------------------- |
+| **AMI3-T** | Langage texte lisible (source)    |
+| **AMI3-B** | Flux binaire optimisé (exécution) |
+
+AMI3-T est compilé en AMI3-B pour gain de place en production.
 
 ---
 
@@ -24,16 +26,17 @@ AMI3-T est compilable en AMI3-B.
 
 Une image AMI3 est constituée de **couches (layers)** empilées.
 
-Le moteur maintient un état global :
+Le moteur maintient un état global comprenant :
 
 * Résolution
 * Version de la norme
+* Table de variables
 * Couche active
 * Origine locale
 * Grille de répétition (GRID)
 * Style et shader actifs
 
-Les instructions sont évaluées **séquentiellement**.
+Les instructions sont évaluées **séquentiellement**, sans ambiguïté.
 
 ---
 
@@ -91,9 +94,9 @@ Exemples :
 
 ---
 
-## 4. En-tête (obligatoire)
+## 4. En-tête obligatoire
 
-Tout fichier AMI3 **doit commencer par trois lignes** :
+Tout fichier AMI3 **doit obligatoirement** commencer par :
 
 ```
 HEAD:AMI3
@@ -101,23 +104,56 @@ VER:x.y
 RSL:width,height
 ```
 
-### Règles
+### Exemple :
 
-* `VER` définit la version de la norme utilisée
-* Le moteur **doit refuser** une version non supportée
-* La version ne peut pas être redéfinie ailleurs
-
-### Exemple
-
-```
+```ami3
 HEAD:AMI3
-VER:1.0
+VER:1.1
 RSL:1920,1080
 ```
 
+### Règles
+
+* `VER` définit la version de la norme utilisée
+* Un moteur doit être rétrocompatible avec les ancienne version de la norme et ignorer les instruction inconue.
+* `HEAD`, `VER` et `RSL` ne peuvent apparaître **qu’une seule fois**
+
 ---
 
-## 5. Système de couches
+## 5. Variables (VAR)
+
+Les variables permettent de factoriser des valeurs numériques ou couleurs.
+
+### Déclaration
+
+```
+VAR:name=value
+```
+
+### Utilisation
+
+```
+$name
+```
+
+### Exemple
+
+```ami3
+VAR:cx=500
+VAR:mainColor=#FF00FFFF
+
+MTF:CIR,[$cx,300],120,$mainColor
+```
+
+### Règles
+
+* Substitution **avant exécution**
+* Variables immuables
+* Portée globale au fichier
+
+---
+
+## 6. Système de couches
 
 ```
 LYR:n
@@ -125,12 +161,13 @@ LYR:n
 
 * `n` est un entier ≥ 0
 * Les couches sont rendues **dans l’ordre croissant**
+* Changer de couche ne vide pas la précédente
 
 ---
 
-## 6. Formes (MTF — Meta Transformable Forms)
+## 7. Formes (MTF — Meta Transformable Forms)
 
-### 6.1 Cercle
+### 7.1 Cercle
 
 ```
 MTF:CIR,[x,y],radius,color
@@ -138,22 +175,26 @@ MTF:CIR,[x,y],radius,color
 
 ---
 
-### 6.2 Rectangle / Carré (avec rotation et coins arrondis)
+### 7.2 Rectangle / Carré (norme 1.1)
 
 ```
 MTF:SQR,[x,y],width,height,rotation,cornerRadius,color
 ```
 
+| Paramètre      | Description                          |
+| -------------- | ------------------------------------ |
+| `rotation`     | Angle en degrés (centre de la forme) |
+| `cornerRadius` | Rayon des coins arrondis             |
+
 #### Règles
 
-* `rotation` est exprimée en **degrés**
-* La rotation est appliquée autour du **centre**
 * `cornerRadius` est clampé à `min(width,height)/2`
-* `cornerRadius = 0` → rectangle strict
+* `cornerRadius = 0` ⇒ rectangle strict
+* La rotation est appliquée **après translation**
 
 ---
 
-### 6.3 Polygone régulier
+### 7.3 Polygone régulier
 
 ```
 MTF:POL,[x,y],radius,sides,rotation,color
@@ -161,9 +202,9 @@ MTF:POL,[x,y],radius,sides,rotation,color
 
 ---
 
-## 7. Lignes & contours (BRD)
+## 8. Lignes & contours (BRD)
 
-### 7.1 Ligne droite
+### 8.1 Ligne droite
 
 ```
 BRD:LIN,[x1,y1],[x2,y2],thickness,color
@@ -171,7 +212,7 @@ BRD:LIN,[x1,y1],[x2,y2],thickness,color
 
 ---
 
-### 7.2 Courbe de Bézier cubique
+### 8.2 Courbe de Bézier cubique
 
 ```
 BRD:BEZ,[p1],[p2],[p3],[p4],thickness,color
@@ -179,11 +220,11 @@ BRD:BEZ,[p1],[p2],[p3],[p4],thickness,color
 
 ---
 
-## 8. Dégradés & shaders (GRD)
+## 9. Dégradés & shaders (GRD)
 
 Les shaders affectent la **couche courante**.
 
-### 8.1 Dégradé linéaire
+### 9.1 Dégradé linéaire
 
 ```
 GRD:LIN,angle,color1,color2
@@ -191,7 +232,7 @@ GRD:LIN,angle,color1,color2
 
 ---
 
-### 8.2 Dégradé radial
+### 9.2 Dégradé radial
 
 ```
 GRD:RAD,[center],radius,color1,color2
@@ -199,7 +240,7 @@ GRD:RAD,[center],radius,color1,color2
 
 ---
 
-## 9. Grille de répétition (GRID)
+## 10. Grille de répétition (GRID)
 
 Permet de répéter un groupe d’instructions.
 
@@ -209,7 +250,7 @@ GRID:cols,rows,[origin],[spacing]
 ENDGRID
 ```
 
-Formule de position :
+Formule :
 
 ```
 position_finale = origin + (i * spacing.x, j * spacing.y)
@@ -219,23 +260,21 @@ Les instructions internes utilisent des **coordonnées locales**.
 
 ---
 
-## 10. Système de Gréffons (GREFON)
+## 11. Système de Gréffons (GREFON)
 
 Les Gréffons permettent d’encapsuler des motifs graphiques réutilisables.
 
----
-
-### 10.1 Gréffon inline
+### 11.1 Définition
 
 ```
 GREFON:id,type,[params]
-    <instructions AMI3>
+    <instructions>
 ENDGREFON
 ```
 
 ---
 
-### 10.2 Utilisation d’un gréffon
+### 11.2 Utilisation
 
 ```
 USE:id,[position],[params]
@@ -243,33 +282,25 @@ USE:id,[position],[params]
 
 ---
 
-### 10.3 Gréffon externe
+### 11.3 Règles
 
-```
-GREFON_LINK:id,"path/file.ami3t",HASH=0xXXXXXXXX
-```
-
----
-
-### 10.4 Règles
-
-* Pas de redéfinition de `HEAD`, `VER` ou `RSL`
 * Pas de récursion
+* Pas de `HEAD`, `VER`, `RSL` internes
 * Transformations locales uniquement
 
 ---
 
-## 11. Ordre d’exécution
+## 12. Ordre d’exécution
 
 1. Lecture séquentielle
-2. Validation de version
+2. Substitution des variables
 3. Déploiement des GRID
 4. Déploiement des GREFON
 5. Rendu couche par couche
 
 ---
 
-## 12. Fin de fichier
+## 13. Fin de fichier
 
 ```
 END
@@ -277,14 +308,16 @@ END
 
 ---
 
-## 13. Grammaire formelle (EBNF)
+## 14. Grammaire formelle (EBNF)
 
 ```ebnf
-file        = header , version , resolution , { statement } , "END" ;
+file        = header , version , resolution , { var } , { statement } , "END" ;
 
 header      = "HEAD:AMI3" ;
 version     = "VER:" , number ;
 resolution  = "RSL:" , int , "," , int ;
+
+var         = "VAR:" , ident , "=" , value ;
 
 statement   = layer
             | shape
@@ -299,13 +332,15 @@ layer       = "LYR:" , int ;
 shape       = circle | square | polygon ;
 
 circle      = "MTF:CIR," , vector , "," , number , "," , color ;
-square      = "MTF:SQR," , vector , "," , number , "," , number , "," , number , "," , number , "," , color ;
+square      = "MTF:SQR," , vector , "," , number , "," , number ,
+              "," , number , "," , number , "," , color ;
 polygon     = "MTF:POL," , vector , "," , number , "," , int , "," , number , "," , color ;
 
 border      = line | bezier ;
 
 line        = "BRD:LIN," , vector , "," , vector , "," , number , "," , color ;
-bezier      = "BRD:BEZ," , vector , "," , vector , "," , vector , "," , vector , "," , number , "," , color ;
+bezier      = "BRD:BEZ," , vector , "," , vector , "," , vector , "," , vector ,
+              "," , number , "," , color ;
 
 gradient    = linear_grad | radial_grad ;
 
@@ -325,52 +360,46 @@ use         = "USE:" , ident , "," , vector , "," , "[" , params , "]" ;
 vector      = "[" , number , "," , number , "]" ;
 color       = "#" , hex , hex , hex , hex , hex , hex , hex , hex ;
 number      = int | float ;
+value       = number | color ;
 ```
 
 ---
 
-## 14. AMI3-B (format binaire)
+## 15. AMI3-B (format binaire)
 
 AMI3-B est un flux compact composé de :
 
 * Header `AMI3`
-* Version (float32)
+* Version
 * Résolution
-* Opcodes + données
+* Table de variables
+* Flux d’opcodes
 
-### 14.1 Opcodes principaux
+### Opcodes 
 
-| Opcode | Instruction |
-| ------ | ----------- |
-| `0x01` | LYR         |
-| `0x10` | MTF:CIR     |
-| `0x11` | MTF:SQR     |
-| `0x12` | MTF:POL     |
-| `0x20` | BRD:LIN     |
-| `0x21` | BRD:BEZ     |
-| `0x30` | GRD         |
-| `0x40` | GRID        |
-| `0x50` | GREFON      |
-| `0x51` | USE         |
-| `0xFF` | END         |
+| Opcode | Instruction |  Indication                                            |
+| ------ | ----------- | ------------------------------------------------------ |
+| `0x00` | VER         |  version du fichier                             |
+| `0x01` | LYR         |  couche                                         |
+| `0x02` | VAR         |  variable                                       |
+| `0x10` | MTF:CIR     |  cercle                                         |
+| `0x11` | MTF:SQR     |  rectangle/carré avec rotation et cornerRadius  |
+| `0x12` | MTF:POL     |  polygone régulier                              |
+| `0x20` | BRD:LIN     |  ligne droite                                   |
+| `0x21` | BRD:BEZ     |  courbe de Bézier cubique                       |
+| `0x30` | GRD         |  gradient linéaire ou radial                    |
+| `0x40` | GRID        |  début de grille                                |
+| `0x41` | ENDGRID     |  fin de grille                                  |
+| `0x50` | GREFON      |  définition de gréffon                          |
+| `0x51` | ENDGREFON   |  fin de gréffon                                 |
+| `0x52` | USE         |  appel de gréffon                               |
+| `0xFF` | END         |  fin du fichier                                 |
 
----
-
-## 15. Exemples AMI3-T
-
-### Rectangle arrondi rotatif
-
-```ami3
-HEAD:AMI3
-VER:1.1
-RSL:800,600
-LYR:0
-MTF:SQR,[400,300],300,180,25,32,#FF0000FF
-END
-```
 
 ---
 
 **Conçu et imaginé par Salengros Liam — 2026**
 
+
 *Rédaction technique assistée par intelligence artificielle*
+
