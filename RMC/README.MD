@@ -1,4 +1,4 @@
-![Licence](https://img.shields.io/badge/Categorie-RESEARCH%SUJET-purple)
+![Licence](https://img.shields.io/badge/Categorie-RESEARCH-red)
 
 # Rotational Mesh Cipher (RMC) – Concept Théorique
 
