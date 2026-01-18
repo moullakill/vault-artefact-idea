@@ -1,6 +1,6 @@
 # **AMI3 — Spécification Technique**
 
-**Version 1.0**
+**Version de la norme : 1.0**
 Norme **AMI3-T (texte)** & **AMI3-B (binaire)**
 
 ---
@@ -16,7 +16,7 @@ Le format repose sur deux représentations :
 | **AMI3-T** | Langage texte lisible (source)   |
 | **AMI3-B** | Flux binaire compact (exécution) |
 
-AMI3-T est compilé en AMI3-B, qui est ensuite interprété par un moteur de rendu.
+AMI3-T est compilable en AMI3-B.
 
 ---
 
@@ -27,6 +27,7 @@ Une image AMI3 est constituée de **couches (layers)** empilées.
 Le moteur maintient un état global :
 
 * Résolution
+* Version de la norme
 * Couche active
 * Origine locale
 * Grille de répétition (GRID)
@@ -90,19 +91,27 @@ Exemples :
 
 ---
 
-## 4. En-tête
+## 4. En-tête (obligatoire)
 
-Tout fichier AMI3 doit commencer par :
+Tout fichier AMI3 **doit commencer par trois lignes** :
 
 ```
 HEAD:AMI3
+VER:x.y
 RSL:width,height
 ```
 
-Exemple :
+### Règles
+
+* `VER` définit la version de la norme utilisée
+* Le moteur **doit refuser** une version non supportée
+* La version ne peut pas être redéfinie ailleurs
+
+### Exemple
 
 ```
 HEAD:AMI3
+VER:1.0
 RSL:1920,1080
 ```
 
@@ -129,11 +138,18 @@ MTF:CIR,[x,y],radius,color
 
 ---
 
-### 6.2 Rectangle / Carré
+### 6.2 Rectangle / Carré (avec rotation et coins arrondis)
 
 ```
-MTF:SQR,[x,y],width,height,rotation,color
+MTF:SQR,[x,y],width,height,rotation,cornerRadius,color
 ```
+
+#### Règles
+
+* `rotation` est exprimée en **degrés**
+* La rotation est appliquée autour du **centre**
+* `cornerRadius` est clampé à `min(width,height)/2`
+* `cornerRadius = 0` → rectangle strict
 
 ---
 
@@ -211,20 +227,9 @@ Les Gréffons permettent d’encapsuler des motifs graphiques réutilisables.
 
 ### 10.1 Gréffon inline
 
-Définition :
-
 ```
 GREFON:id,type,[params]
     <instructions AMI3>
-ENDGREFON
-```
-
-Exemple :
-
-```ami3
-GREFON:tree,MTF,[size,color]
-    MTF:SQR,[0,50],20,80,0,#8B4513FF
-    MTF:POL,[0,-30],50,3,0,#228B22FF
 ENDGREFON
 ```
 
@@ -236,12 +241,6 @@ ENDGREFON
 USE:id,[position],[params]
 ```
 
-Exemple :
-
-```ami3
-USE:tree,[300,700],[50,#228B22FF]
-```
-
 ---
 
 ### 10.3 Gréffon externe
@@ -250,25 +249,23 @@ USE:tree,[300,700],[50,#228B22FF]
 GREFON_LINK:id,"path/file.ami3t",HASH=0xXXXXXXXX
 ```
 
-* Le hash est optionnel
-* Permet le chargement de bibliothèques
-
 ---
 
 ### 10.4 Règles
 
-* Pas de redéfinition de `HEAD` ou `RSL`
+* Pas de redéfinition de `HEAD`, `VER` ou `RSL`
 * Pas de récursion
-* Les transformations sont locales
+* Transformations locales uniquement
 
 ---
 
 ## 11. Ordre d’exécution
 
 1. Lecture séquentielle
-2. Déploiement des GRID
-3. Déploiement des GREFON
-4. Rendu couche par couche
+2. Validation de version
+3. Déploiement des GRID
+4. Déploiement des GREFON
+5. Rendu couche par couche
 
 ---
 
@@ -283,9 +280,10 @@ END
 ## 13. Grammaire formelle (EBNF)
 
 ```ebnf
-file        = header , resolution , { statement } , "END" ;
+file        = header , version , resolution , { statement } , "END" ;
 
 header      = "HEAD:AMI3" ;
+version     = "VER:" , number ;
 resolution  = "RSL:" , int , "," , int ;
 
 statement   = layer
@@ -301,7 +299,7 @@ layer       = "LYR:" , int ;
 shape       = circle | square | polygon ;
 
 circle      = "MTF:CIR," , vector , "," , number , "," , color ;
-square      = "MTF:SQR," , vector , "," , number , "," , number , "," , number , "," , color ;
+square      = "MTF:SQR," , vector , "," , number , "," , number , "," , number , "," , number , "," , color ;
 polygon     = "MTF:POL," , vector , "," , number , "," , int , "," , number , "," , color ;
 
 border      = line | bezier ;
@@ -336,6 +334,7 @@ number      = int | float ;
 AMI3-B est un flux compact composé de :
 
 * Header `AMI3`
+* Version (float32)
 * Résolution
 * Opcodes + données
 
@@ -359,49 +358,19 @@ AMI3-B est un flux compact composé de :
 
 ## 15. Exemples AMI3-T
 
-### 15.1 Minimal
+### Rectangle arrondi rotatif
 
 ```ami3
 HEAD:AMI3
+VER:1.1
 RSL:800,600
 LYR:0
-MTF:CIR,[400,300],100,#FF0000FF
-END
-```
-
----
-
-### 15.2 Motif répété
-
-```ami3
-HEAD:AMI3
-RSL:800,800
-LYR:0
-GRID:5,5,[100,100],[120,120]
-MTF:CIR,[0,0],30,#00FFFFFF
-ENDGRID
-END
-```
-
----
-
-### 15.3 Mandala
-
-```ami3
-HEAD:AMI3
-RSL:1000,1000
-LYR:0
-GRD:RAD,[500,500],600,#050020FF,#200060FF
-LYR:1
-GRID:12,1,[500,500],[0,0]
-MTF:POL,[0,0],300,6,0,#FF00FFFF
-ENDGRID
+MTF:SQR,[400,300],300,180,25,32,#FF0000FF
 END
 ```
 
 ---
 
 **Conçu et imaginé par Salengros Liam — 2026**
-
 
 *Rédaction technique assistée par intelligence artificielle*
