@@ -1,20 +1,20 @@
-# **AMI3 – Spécification Technique**
+# **AMI3 — Spécification Technique**
 
-*Version 1.0 – Norme AMI3-T & AMI3-B*
+**Version 1.0**
+Norme **AMI3-T (texte)** & **AMI3-B (binaire)**
 
 ---
 
 ## 1. Vue d’ensemble
 
-AMI3 est un format de description graphique **déterministe**, **vectoriel** et **compilable**.
-Il est conçu pour encoder des scènes graphiques complexes sous forme de **commandes géométriques minimales**.
+AMI3 est un format graphique **vectoriel**, **déterministe** et **compilable**, conçu pour décrire des scènes complexes à l’aide d’instructions géométriques minimales.
 
-Deux formats existent :
+Le format repose sur deux représentations :
 
-| Format     | Rôle                                      |
-| ---------- | ----------------------------------------- |
-| **AMI3-T** | Format texte lisible (source)             |
-| **AMI3-B** | Format binaire compilé (exécution rapide) |
+| Format     | Description                      |
+| ---------- | -------------------------------- |
+| **AMI3-T** | Langage texte lisible (source)   |
+| **AMI3-B** | Flux binaire compact (exécution) |
 
 AMI3-T est compilé en AMI3-B, qui est ensuite interprété par un moteur de rendu.
 
@@ -22,18 +22,17 @@ AMI3-T est compilé en AMI3-B, qui est ensuite interprété par un moteur de ren
 
 ## 2. Modèle d’exécution
 
-Une image AMI3 est une **pile de couches (Layers)**.
-Chaque couche contient une suite de **commandes de dessin**.
+Une image AMI3 est constituée de **couches (layers)** empilées.
 
 Le moteur maintient un état global :
 
 * Résolution
 * Couche active
-* Origine de transformation
+* Origine locale
 * Grille de répétition (GRID)
-* Styles et shaders actifs
+* Style et shader actifs
 
-Chaque instruction modifie ou consomme cet état.
+Les instructions sont évaluées **séquentiellement**.
 
 ---
 
@@ -46,19 +45,19 @@ Chaque instruction modifie ou consomme cet état.
 | `int`   | Entier signé |
 | `float` | Nombre réel  |
 
-AMI3-T accepte les deux.
+Les deux sont acceptés sans suffixe.
 
 ---
 
 ### 3.2 Vecteur
 
-Représente une position ou un déplacement.
+Représente une position ou un déplacement :
 
 ```
 [x,y]
 ```
 
-Exemple :
+Exemples :
 
 ```
 [500,250]
@@ -75,25 +74,25 @@ Format RGBA hexadécimal :
 #RRGGBBAA
 ```
 
-| Composant | Valeur               |
-| --------- | -------------------- |
-| RR        | Rouge                |
-| GG        | Vert                 |
-| BB        | Bleu                 |
-| AA        | Alpha (transparence) |
+| Champ | Description          |
+| ----- | -------------------- |
+| RR    | Rouge                |
+| GG    | Vert                 |
+| BB    | Bleu                 |
+| AA    | Alpha (transparence) |
 
-Exemple :
+Exemples :
 
 ```
-#FF0000FF   (rouge opaque)
-#00FF0080   (vert 50%)
+#FF0000FF   // Rouge opaque
+#00FF0080   // Vert semi-transparent
 ```
 
 ---
 
 ## 4. En-tête
 
-Chaque fichier doit commencer par :
+Tout fichier AMI3 doit commencer par :
 
 ```
 HEAD:AMI3
@@ -115,13 +114,12 @@ RSL:1920,1080
 LYR:n
 ```
 
-Change la couche active.
-
-Les couches sont rendues dans l’ordre croissant.
+* `n` est un entier ≥ 0
+* Les couches sont rendues **dans l’ordre croissant**
 
 ---
 
-## 6. Formes (MTF – Meta Transformable Forms)
+## 6. Formes (MTF — Meta Transformable Forms)
 
 ### 6.1 Cercle
 
@@ -147,9 +145,9 @@ MTF:POL,[x,y],radius,sides,rotation,color
 
 ---
 
-## 7. Lignes et contours (BRD)
+## 7. Lignes & contours (BRD)
 
-### 7.1 Ligne
+### 7.1 Ligne droite
 
 ```
 BRD:LIN,[x1,y1],[x2,y2],thickness,color
@@ -157,7 +155,7 @@ BRD:LIN,[x1,y1],[x2,y2],thickness,color
 
 ---
 
-### 7.2 Bézier
+### 7.2 Courbe de Bézier cubique
 
 ```
 BRD:BEZ,[p1],[p2],[p3],[p4],thickness,color
@@ -165,7 +163,9 @@ BRD:BEZ,[p1],[p2],[p3],[p4],thickness,color
 
 ---
 
-## 8. Dégradés & Shaders (GRD)
+## 8. Dégradés & shaders (GRD)
+
+Les shaders affectent la **couche courante**.
 
 ### 8.1 Dégradé linéaire
 
@@ -185,34 +185,94 @@ GRD:RAD,[center],radius,color1,color2
 
 ## 9. Grille de répétition (GRID)
 
-Permet de dupliquer des formes ou groupes.
+Permet de répéter un groupe d’instructions.
 
 ```
 GRID:cols,rows,[origin],[spacing]
-...
+    <instructions>
 ENDGRID
 ```
 
-Toutes les commandes entre GRID et ENDGRID sont répétées.
-
-Position finale :
+Formule de position :
 
 ```
-final_position = origin + (i * spacing.x, j * spacing.y)
+position_finale = origin + (i * spacing.x, j * spacing.y)
+```
+
+Les instructions internes utilisent des **coordonnées locales**.
+
+---
+
+## 10. Système de Gréffons (GREFON)
+
+Les Gréffons permettent d’encapsuler des motifs graphiques réutilisables.
+
+---
+
+### 10.1 Gréffon inline
+
+Définition :
+
+```
+GREFON:id,type,[params]
+    <instructions AMI3>
+ENDGREFON
+```
+
+Exemple :
+
+```ami3
+GREFON:tree,MTF,[size,color]
+    MTF:SQR,[0,50],20,80,0,#8B4513FF
+    MTF:POL,[0,-30],50,3,0,#228B22FF
+ENDGREFON
 ```
 
 ---
 
-## 10. Ordre de rendu
+### 10.2 Utilisation d’un gréffon
 
-1. Le moteur lit ligne par ligne
-2. Chaque instruction est ajoutée à la couche courante
-3. Les GRID sont déroulés en instructions internes
-4. Les couches sont fusionnées du bas vers le haut
+```
+USE:id,[position],[params]
+```
+
+Exemple :
+
+```ami3
+USE:tree,[300,700],[50,#228B22FF]
+```
 
 ---
 
-## 11. Fin de fichier
+### 10.3 Gréffon externe
+
+```
+GREFON_LINK:id,"path/file.ami3t",HASH=0xXXXXXXXX
+```
+
+* Le hash est optionnel
+* Permet le chargement de bibliothèques
+
+---
+
+### 10.4 Règles
+
+* Pas de redéfinition de `HEAD` ou `RSL`
+* Pas de récursion
+* Les transformations sont locales
+
+---
+
+## 11. Ordre d’exécution
+
+1. Lecture séquentielle
+2. Déploiement des GRID
+3. Déploiement des GREFON
+4. Rendu couche par couche
+
+---
+
+## 12. Fin de fichier
 
 ```
 END
@@ -220,9 +280,9 @@ END
 
 ---
 
-## 12. Grammaire formelle (EBNF)
+## 13. Grammaire formelle (EBNF)
 
-```
+```ebnf
 file        = header , resolution , { statement } , "END" ;
 
 header      = "HEAD:AMI3" ;
@@ -232,7 +292,9 @@ statement   = layer
             | shape
             | border
             | gradient
-            | grid ;
+            | grid
+            | grefon
+            | use ;
 
 layer       = "LYR:" , int ;
 
@@ -256,6 +318,12 @@ grid        = "GRID:" , int , "," , int , "," , vector , "," , vector ,
               { statement },
               "ENDGRID" ;
 
+grefon      = "GREFON:" , ident , "," , ident , "," , "[" , params , "]" ,
+              { statement } ,
+              "ENDGREFON" ;
+
+use         = "USE:" , ident , "," , vector , "," , "[" , params , "]" ;
+
 vector      = "[" , number , "," , number , "]" ;
 color       = "#" , hex , hex , hex , hex , hex , hex , hex , hex ;
 number      = int | float ;
@@ -263,140 +331,77 @@ number      = int | float ;
 
 ---
 
-## 13. AMI3-B (binaire)
+## 14. AMI3-B (format binaire)
 
-AMI3-B est une version compacte contenant :
+AMI3-B est un flux compact composé de :
 
-* Magic header `AMI3`
+* Header `AMI3`
 * Résolution
-* Flux d’opcodes
-* Données flottantes et couleurs compressées
+* Opcodes + données
 
-Chaque opcode correspond à une instruction AMI3-T.
+### 14.1 Opcodes principaux
 
-Exemple :
-
-| Opcode | Fonction |
-| ------ | -------- |
-| `0x01` | LYR      |
-| `0x10` | CIR      |
-| `0x11` | SQR      |
-| `0x12` | POL      |
-| `0x20` | LIN      |
-| `0x21` | BEZ      |
-| `0x30` | GRD      |
-| `0x40` | GRID     |
-| `0xFF` | END      |
+| Opcode | Instruction |
+| ------ | ----------- |
+| `0x01` | LYR         |
+| `0x10` | MTF:CIR     |
+| `0x11` | MTF:SQR     |
+| `0x12` | MTF:POL     |
+| `0x20` | BRD:LIN     |
+| `0x21` | BRD:BEZ     |
+| `0x30` | GRD         |
+| `0x40` | GRID        |
+| `0x50` | GREFON      |
+| `0x51` | USE         |
+| `0xFF` | END         |
 
 ---
 
-## 15. Exemples de code AMI3-T
+## 15. Exemples AMI3-T
 
-### 15.1 Exemple minimal
+### 15.1 Minimal
 
 ```ami3
 HEAD:AMI3
 RSL:800,600
-
 LYR:0
 MTF:CIR,[400,300],100,#FF0000FF
-
 END
 ```
 
-Affiche un cercle rouge centré sur l’image.
-
 ---
 
-### 15.2 Scène multicouches
-
-```ami3
-HEAD:AMI3
-RSL:1000,1000
-
-// Fond
-LYR:0
-GRD:LIN,90,#001122FF,#334455FF
-
-// Soleil
-LYR:1
-MTF:CIR,[800,200],120,#FFD700FF
-
-// Sol
-LYR:2
-MTF:SQR,[500,850],1000,300,0,#228B22FF
-
-END
-```
-
-Crée un ciel en dégradé, un soleil et une bande de sol verte.
-
----
-
-### 15.3 Motif répété avec GRID
+### 15.2 Motif répété
 
 ```ami3
 HEAD:AMI3
 RSL:800,800
-
 LYR:0
 GRID:5,5,[100,100],[120,120]
 MTF:CIR,[0,0],30,#00FFFFFF
 ENDGRID
-
 END
 ```
 
-Dessine une grille 5×5 de cercles cyan espacés régulièrement.
-
 ---
 
-### 15.4 Rosace géométrique
+### 15.3 Mandala
 
 ```ami3
 HEAD:AMI3
 RSL:1000,1000
-
 LYR:0
 GRD:RAD,[500,500],600,#050020FF,#200060FF
-
 LYR:1
 GRID:12,1,[500,500],[0,0]
 MTF:POL,[0,0],300,6,0,#FF00FFFF
-MTF:POL,[0,0],220,6,15,#00FFFFFF
 ENDGRID
-
-LYR:2
-MTF:CIR,[500,500],80,#FFFFFFFF
-
 END
 ```
-
-Crée un mandala hexagonal tournant sur un fond radial.
 
 ---
 
-### 15.5 Combinaison formes + lignes
+**Conçu et imaginé par Salengros Liam — 2026**
 
-```ami3
-HEAD:AMI3
-RSL:1200,800
-
-LYR:0
-MTF:SQR,[600,400],1200,800,0,#000000FF
-
-LYR:1
-MTF:CIR,[600,400],200,#FF0000FF
-BRD:LIN,[400,400],[800,400],4,#FFFFFFFF
-BRD:LIN,[600,200],[600,600],4,#FFFFFFFF
-
-END
-```
-
-Produit un cercle central traversé par deux axes lumineux.
-
---- 
-
-*Conçu et imaginé par Salengros Liam — 2026*
 
 *Rédaction technique assistée par intelligence artificielle*
