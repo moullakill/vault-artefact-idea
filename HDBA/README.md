@@ -1,4 +1,4 @@
-![Licence](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey)
+![Licence](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey) ![Licence](https://img.shields.io/badge/Categorie-WHITEPAPER-purple)
 # H.D.B.A. (Hierarchical Divisible Block Architecture)
 
 > Concept exploratoire pour une architecture de modèles de langage modulaires, hiérarchiques et adaptatifs.
