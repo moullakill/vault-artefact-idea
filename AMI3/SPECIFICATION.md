@@ -202,9 +202,17 @@ MTF:POL,[x,y],radius,sides,rotation,color
 
 ---
 
-## 8. Lignes & contours (BRD)
+## 8. Pixel (PX)
 
-### 8.1 Ligne droite
+L'instruction `PX` permet de modifier la couleur d'un pixel unique à une coordonnée précise. C'est l'unité de dessin la plus petite du format AMI3.
+
+```
+PX:[x,y],color
+```
+
+## 9. Lignes & contours (BRD)
+
+### 9.1 Ligne droite
 
 ```
 BRD:LIN,[x1,y1],[x2,y2],thickness,color
@@ -212,7 +220,7 @@ BRD:LIN,[x1,y1],[x2,y2],thickness,color
 
 ---
 
-### 8.2 Courbe de Bézier cubique
+### 9.2 Courbe de Bézier cubique
 
 ```
 BRD:BEZ,[p1],[p2],[p3],[p4],thickness,color
@@ -220,11 +228,11 @@ BRD:BEZ,[p1],[p2],[p3],[p4],thickness,color
 
 ---
 
-## 9. Dégradés & shaders (GRD)
+## 10. Dégradés & shaders (GRD)
 
 Les shaders affectent la **couche courante**.
 
-### 9.1 Dégradé linéaire
+### 10.1 Dégradé linéaire
 
 ```
 GRD:LIN,angle,color1,color2
@@ -232,7 +240,7 @@ GRD:LIN,angle,color1,color2
 
 ---
 
-### 9.2 Dégradé radial
+### 10.2 Dégradé radial
 
 ```
 GRD:RAD,[center],radius,color1,color2
@@ -240,7 +248,7 @@ GRD:RAD,[center],radius,color1,color2
 
 ---
 
-## 10. Grille de répétition (GRID)
+## 11. Grille de répétition (GRID)
 
 Permet de répéter un groupe d’instructions.
 
@@ -260,11 +268,11 @@ Les instructions internes utilisent des **coordonnées locales**.
 
 ---
 
-## 11. Système de Gréffons (GREFON)
+## 12. Système de Gréffons (GREFON)
 
 Les Gréffons permettent d’encapsuler des motifs graphiques réutilisables.
 
-### 11.1 Définition
+### 12.1 Définition
 
 ```
 GREFON:id,type,[params]
@@ -274,7 +282,7 @@ ENDGREFON
 
 ---
 
-### 11.2 Utilisation
+### 12.2 Utilisation
 
 ```
 USE:id,[position],[params]
@@ -282,7 +290,7 @@ USE:id,[position],[params]
 
 ---
 
-### 11.3 Règles
+### 12.3 Règles
 
 * Pas de récursion
 * Pas de `HEAD`, `VER`, `RSL` internes
@@ -290,7 +298,7 @@ USE:id,[position],[params]
 
 ---
 
-## 12. Ordre d’exécution
+## 13. Ordre d’exécution
 
 1. Lecture séquentielle
 2. Substitution des variables
@@ -300,7 +308,7 @@ USE:id,[position],[params]
 
 ---
 
-## 13. Fin de fichier
+## 14. Fin de fichier
 
 ```
 END
@@ -308,7 +316,7 @@ END
 
 ---
 
-## 14. Grammaire formelle (EBNF)
+## 15. Grammaire formelle (EBNF)
 
 ```ebnf
 file        = header , version , resolution , { var } , { statement } , "END" ;
@@ -329,12 +337,13 @@ statement   = layer
 
 layer       = "LYR:" , int ;
 
-shape       = circle | square | polygon ;
+shape       = circle | square | polygon | pixel ;
 
 circle      = "MTF:CIR," , vector , "," , number , "," , color ;
 square      = "MTF:SQR," , vector , "," , number , "," , number ,
               "," , number , "," , number , "," , color ;
 polygon     = "MTF:POL," , vector , "," , number , "," , int , "," , number , "," , color ;
+pixel       = "PX:" , vector , "," , color ;
 
 border      = line | bezier ;
 
@@ -365,7 +374,7 @@ value       = number | color ;
 
 ---
 
-## 15. AMI3-B (format binaire)
+## 16. AMI3-B (format binaire)
 
 AMI3-B est un flux compact composé de :
 
@@ -385,6 +394,7 @@ AMI3-B est un flux compact composé de :
 | `0x10` | MTF:CIR     |  cercle                                         |
 | `0x11` | MTF:SQR     |  rectangle/carré avec rotation et cornerRadius  |
 | `0x12` | MTF:POL     |  polygone régulier                              |
+| `0x13` | PX          |  Pixel isolé                                    |
 | `0x20` | BRD:LIN     |  ligne droite                                   |
 | `0x21` | BRD:BEZ     |  courbe de Bézier cubique                       |
 | `0x30` | GRD         |  gradient linéaire ou radial                    |
