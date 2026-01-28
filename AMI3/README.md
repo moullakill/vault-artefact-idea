@@ -15,7 +15,6 @@ L'AMI3 a été conçu pour répondre aux problématiques de saturation de bande 
 * `.ami3b` (Binary) : Format compilé ultra-compact pour la production.
 
 
-* **Légèreté extrême :** En moyenne 7 fois plus léger qu'un fichier SVG équivalent grâce à l'élimination de la verbosité du XML (sur dessin vectoriel).
 
 ---
 
@@ -23,7 +22,7 @@ L'AMI3 a été conçu pour répondre aux problématiques de saturation de bande 
 
 AMI3 repose sur une architecture modulaire inspirée des moteurs graphiques modernes.
 Chaque image est décrite comme une pile de **couches (Layers)** contenant des **formes (MTF)**, des **lignes et contours (BRD)**, des **dégradés et shaders (GRD)** et des **réplicateurs spatiaux (GRID)**.
-Les **Greffons (Plugins)** peuvent étendre le langage pour ajouter de nouveaux types de primitives, filtres ou générateurs procéduraux, sans casser la compatibilité.
+Les **Greffons** sont des formes ou ensemble de formes réutilisable.
 Cette séparation claire entre **géométrie, style, répétition et effets** permet à AMI3 d’encoder des scènes complexes de façon extrêmement compacte et déterministe.
 
 ---
