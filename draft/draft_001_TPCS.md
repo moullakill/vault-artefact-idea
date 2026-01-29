@@ -35,16 +35,7 @@ Pour éviter la destruction du composant (seuil de dommage optique), le système
 * **Temps d'activation :**  femtosecondes.
 * **Gestion de la chaleur :** L'activation est si brève que l'énergie thermique n'a pas le temps de se propager dans le substrat (confinement temporel), permettant des pics de puissance élevés sans fusion du matériau.
 
-## 4. Spécifications Techniques Estimées
-
-| Paramètre | Estimation | Unité |
-| --- | --- | --- |
-| **Vitesse de commutation** |  à  | Secondes |
-| **Fréquence théorique** |  | Terahertz (THz) |
-| **Type de signal ** | Incohérent / Divergent | - |
-| **Nature du filtre** | Spatial (sténopé) / Fréquentiel | - |
-
-## 5. Zones d'Ombre et Travaux Restants (TODO)
+## 4. Zones d'Ombre et Travaux Restants (TODO)
 
 * [ ] Définir le ratio précis entre la puissance de  et  pour garantir la stabilité.
 * [ ] Calculer la dérive thermique en cas d'utilisation à haute fréquence continue.
