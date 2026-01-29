@@ -47,6 +47,11 @@ Pour éviter la dégradation du matériau, le système est conçu pour opérer v
 
 ---
 
+## 5. shéma 
+![Texte alternatif](draft/img/001.png)
+
+---
+
 *Conçu et imaginé par Salengros Liam — 2026*
 
 *Rédaction technique assistée par intelligence artificielle*
