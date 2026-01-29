@@ -48,7 +48,7 @@ Pour éviter la dégradation du matériau, le système est conçu pour opérer v
 ---
 
 ## 5. shéma 
-![Texte alternatif](draft/img/001.png)
+![Texte alternatif](img/001.png)
 
 ---
 
