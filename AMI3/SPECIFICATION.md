@@ -404,7 +404,4 @@ AMI3‑B est un flux compact composé de :
 
 **Conçu et imaginé par Salengros Liam — 2026**  
 
-
 *Rédaction technique assistée par intelligence artificielle*
-
-Tu veux aller dans quelle direction maintenant ?
