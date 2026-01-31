@@ -407,6 +407,4 @@ AMI3‑B est un flux compact composé de :
 
 *Rédaction technique assistée par intelligence artificielle*
 
-- ou revoir la grammaire EBNF pour la rendre encore plus robuste.
-
 Tu veux aller dans quelle direction maintenant ?
