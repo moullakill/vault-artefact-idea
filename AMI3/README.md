@@ -29,11 +29,11 @@ Cette séparation claire entre **géométrie, style, répétition et effets** pe
 
 ## État du Projet
 
-L'AMI3 est actuellement au stade de **Concept**.
+L'AMI3 est actuellement au stade de **Bêta**.
 
 * [x] Grammaire EBNF définie.
 * [x] Table des Opcodes.
-* [ ] Développement du moteur de rendu (Renderer) 
+* [X] Développement du moteur de rendu (bêta) disponible a l'adresse https://ami3-canvas-studio.lovable.app
 * [ ] Compilateur AMI3-T to AMI3-B. 
 
 ---
