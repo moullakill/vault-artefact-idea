@@ -46,7 +46,3 @@ Les idées restent cependant **conçues et dirigées par Salengros Liam**.
 **Salengros Liam**  
 
 Rédaction et conception assistées par intelligence artificielle.
-
----
-
-Si tu veux, je peux aussi te proposer une version plus concise, plus formelle, ou au contraire plus “branding” pour donner une identité forte à ton dépôt.
