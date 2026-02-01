@@ -18,7 +18,7 @@ Two representations coexist:
 | **AMI3‑T** | Human‑readable text language (source) |
 | **AMI3‑B** | Binary stream optimized for execution |
 
-AMI3‑T is compiled into AMI3‑B for production use.
+AMI3‑T is compiled into AMI3‑B for production.
 
 ---
 
@@ -53,9 +53,9 @@ No suffix is required.
 
 ---
 
-### 3.2 Vector
+### 3.2 Position
 
-Represents a position or displacement:
+Represents a position:
 
 ```
 [x,y]
@@ -78,12 +78,12 @@ Hexadecimal RGBA format:
 #RRGGBBAA
 ```
 
-| Field | Description      |
-| ----- | ---------------- |
-| RR    | Red              |
-| GG    | Green            |
-| BB    | Blue             |
-| AA    | Alpha (opacity)  |
+| Field | Description        |
+| ----- | ------------------ |
+| RR    | Red                |
+| GG    | Green              |
+| BB    | Blue               |
+| AA    | Alpha (transparency) |
 
 Examples:
 
@@ -114,15 +114,15 @@ RSL:1920,1080
 
 ### Rules
 
-* `VER` defines the version of the standard used.
-* Engines must be backward‑compatible and ignore unknown instructions.
+* `VER` defines the version of the standard used.  
+* An engine must be backward‑compatible with older versions and ignore unknown instructions.  
 * `HEAD`, `VER`, and `RSL` may appear **only once**.
 
 ---
 
 ## 5. Variables (VAR)
 
-Variables allow factoring reusable values.
+Variables allow reusable values to be factored.
 
 ### Declaration
 
@@ -148,10 +148,10 @@ MTF:CIR,[$cx,300],120,$mainColor
 
 ### Rules
 
-* Substitution occurs **before execution**.
-* Variables are immutable.
-* Global file scope.
-* **Variables may contain any text string**, with no type restriction (number, color, identifier, free text…).
+* Substitution occurs **before execution**.  
+* Variables are immutable.  
+* Global file scope.  
+* **Variables may contain any text string**, with no type restriction (number, color, identifier, free text…).  
 * When a variable is used in a typed context (e.g., color, number), the engine must validate or reject the substituted value.
 
 ---
@@ -162,9 +162,9 @@ MTF:CIR,[$cx,300],120,$mainColor
 LYR:n
 ```
 
-* `n` is an integer ≥ 0.
-* Layers are rendered **in ascending order**.
-* Switching layers does not clear the previous one.
+* `n` is an integer ≥ 0.  
+* Layers are rendered **in ascending order**.  
+* Changing layer does not clear the previous one.
 
 ---
 
@@ -184,16 +184,15 @@ MTF:CIR,[x,y],radius,color
 MTF:SQR,[x,y],width,height,rotation,cornerRadius,color
 ```
 
-| Parameter      | Description                            |
-| -------------- | -------------------------------------- |
-| `rotation`     | Angle in degrees (around the center)   |
-| `cornerRadius` | Rounded corner radius                  |
+| Parameter      | Description                           |
+| -------------- | ------------------------------------- |
+| `rotation`     | Angle in degrees (around the center)  |
+| `cornerRadius` | Rounded corner radius                 |
 
 #### Rules
 
-* `cornerRadius` is clamped to `min(width,height)/2`.
-* `cornerRadius = 0` ⇒ sharp rectangle.
-* Rotation is applied **after translation**.
+* `cornerRadius` is clamped to `min(width,height)/2`.  
+* `cornerRadius = 0` ⇒ strict rectangle.
 
 ---
 
@@ -215,7 +214,7 @@ Draws a single pixel.
 
 ---
 
-## 9. Lines & Outlines (BRD)
+## 9. Lines & Borders (BRD)
 
 ### 9.1 Straight Line
 
@@ -231,9 +230,9 @@ BRD:BEZ,[p1],[p2],[p3],[p4],thickness,color
 
 ---
 
-## 10. Gradients & Shaders (GRD)
+## 10. Gradients (GRD)
 
-Shaders affect the **current layer**.
+Gradients affect the **current layer**.
 
 ### 10.1 Linear Gradient
 
@@ -285,8 +284,8 @@ USE:id,[position],[params]
 
 ### 12.3 Rules
 
-* No recursion.
-* No internal `HEAD`, `VER`, or `RSL`.
+* No recursion.  
+* No internal `HEAD`, `VER`, `RSL`.  
 * Local transformations only.
 
 ---
@@ -310,8 +309,6 @@ END
 ---
 
 ## 15. Formal Grammar (EBNF)
-
-*(Revised to include the new variable rule)*
 
 ```ebnf
 file        = header , version , resolution , { var } , { statement } , "END" ;
@@ -369,11 +366,11 @@ text        = { any_character_except_newline } ;
 
 ---
 
-## 16. AMI3‑B (Binary Format)
+## 16. AMI3‑B (binary format)
 
 AMI3‑B is a compact stream composed of:
 
-* `AMI3` header  
+* Header `AMI3`  
 * Version  
 * Resolution  
 * Variable table  
@@ -387,7 +384,7 @@ AMI3‑B is a compact stream composed of:
 | `0x01` | LYR         | Layer change                                 |
 | `0x02` | VAR         | Variable declaration                         |
 | `0x10` | MTF:CIR     | Circle                                       |
-| `0x11` | MTF:SQR     | Rectangle / square                           |
+| `0x11` | MTF:SQR     | Rectangle/square                             |
 | `0x12` | MTF:POL     | Regular polygon                              |
 | `0x13` | PX          | Single pixel                                 |
 | `0x20` | BRD:LIN     | Straight line                                |
@@ -397,12 +394,11 @@ AMI3‑B is a compact stream composed of:
 | `0x41` | ENDGRID     | Grid end                                     |
 | `0x50` | GREFON      | Plugin definition                            |
 | `0x51` | ENDGREFON   | Plugin end                                   |
-| `0x52` | USE         | Plugin invocation                            |
+| `0x52` | USE         | Plugin call                                  |
 | `0xFF` | END         | End of file                                  |
 
 ---
 
-**Designed and conceived by Salengros Liam — 2026**  
+**Designed and imagined by Salengros Liam — 2026**  
 
 *Technical writing assisted by artificial intelligence*
-
