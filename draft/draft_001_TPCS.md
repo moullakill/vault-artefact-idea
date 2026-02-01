@@ -1,4 +1,5 @@
 ![Licence](https://img.shields.io/badge/Categorie-DRAFT-yellow)
+![Licence](https://img.shields.io/badge/Categorie-RESEARCH-red)
 
 # DRAFT : Spécifications du Transistor Photonique à Commutation Spatiale (TPCS)
 
