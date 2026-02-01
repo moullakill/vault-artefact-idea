@@ -53,9 +53,9 @@ Aucun suffixe n’est requis.
 
 ---
 
-### 3.2 Vecteur
+### 3.2 Position
 
-Représente une position ou un déplacement :
+Représente une position :
 
 ```
 [x,y]
@@ -193,8 +193,6 @@ MTF:SQR,[x,y],width,height,rotation,cornerRadius,color
 
 * `cornerRadius` est clampé à `min(width,height)/2`.
 * `cornerRadius = 0` ⇒ rectangle strict.
-* La rotation est appliquée **après translation**.
-
 ---
 
 ### 7.3 Polygone régulier
@@ -231,9 +229,9 @@ BRD:BEZ,[p1],[p2],[p3],[p4],thickness,color
 
 ---
 
-## 10. Dégradés & shaders (GRD)
+## 10. Dégradés  (GRD)
 
-Les shaders affectent la **couche courante**.
+Les dégradés affectent la **couche courante**.
 
 ### 10.1 Dégradé linéaire
 
@@ -310,8 +308,6 @@ END
 ---
 
 ## 15. Grammaire formelle (EBNF)
-
-*(Révisée pour intégrer la nouvelle règle sur les variables)*
 
 ```ebnf
 file        = header , version , resolution , { var } , { statement } , "END" ;
