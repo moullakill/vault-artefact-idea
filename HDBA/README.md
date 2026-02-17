@@ -51,6 +51,43 @@ Cette architecture vise à :
 
 ---
 
+## Schéma 
+
+```mermaid
+graph TD
+    %% Définition du style des nœuds
+    classDef root fill:#f9f,stroke:#333,stroke-width:4px,color:#000;
+    classDef decision fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000;
+    classDef generation fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,color:#000,stroke-dasharray: 5 5;
+    classDef resource fill:#fff9c4,stroke:#fbc02d,stroke-width:1px,color:#000,font-style:italic;
+
+    %% Entrée
+    Input([Prompt Utilisateur]) --> Root
+
+    subgraph Hiérarchie H.D.B.A
+        Root[<b>Bloc Racine</b><br/>Analyse Initiale]:::root
+        
+        %% Niveau 1
+        Root --> D1[Bloc de Décision A<br/><i>Intent: Technique</i>]:::decision
+        Root --> D2[Bloc de Décision B<br/><i>Intent: Créatif</i>]:::decision
+
+        %% Niveau 2 & Terminaux
+        D1 --> G1{{Bloc de Génération<br/><b>Code & Logique</b>}}:::generation
+        D1 --> D3[Bloc de Décision C<br/><i>Spécialisation Maths</i>]:::decision
+        
+        D2 --> G2{{Bloc de Génération<br/><b>Littérature & Style</b>}}:::generation
+        
+        D3 --> G3{{Bloc de Génération<br/><b>Calcul Formel</b>}}:::generation
+    end
+
+    %% Flux de données et ressources
+    G1 & G2 & G3 --> Output[/Réponse Finale/]
+
+    %% Notes de flux
+    linkStyle 0,1,2,3,4,5,6 stroke:#01579b,stroke-width:2px;
+```
+
+---
 ## Avantages Conceptuels
 
 - **Économie à l’inférence** : Très faible consommation énergétique comparée à un modèle monolithique.  
